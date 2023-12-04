@@ -1,7 +1,6 @@
 import React from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { BsThreeDotsVertical } from 'react-icons/bs';
 
+//Formata a data em dd/mm/aaaa e formata o horario em HH:MM
 const formatDate = (dateString, format) => {
     const options = {
         day: 'numeric',
@@ -26,20 +25,12 @@ const formatDate = (dateString, format) => {
     return '';
 };
 
-const UserInfo = ({ id, author, created_at }) => {
-    const handleEditPost = () => {
-        // Lógica para editar a postagem com o ID id
-    };
-
-    const handleDeletePost = () => {
-        // Lógica para excluir a postagem com o ID id
-    };
-
+const UserInfo = ({ author, created_at }) => {
     return (
         <div className="d-flex flex-row mb-3">
             <div className="p-2">
                 <img
-                    src={`http://127.0.0.1:8000/storage/images/avatar_default.png`}
+                    src={`http://127.0.0.1:8000/avatar_default.png`}
                     alt={`Imagem do usuário ${author}`}
                     style={{
                         width: '50px',
@@ -59,24 +50,6 @@ const UserInfo = ({ id, author, created_at }) => {
                     )}
                 </div>
             </div>
-            <Dropdown className="ml-auto nav-item dropdown">
-                <Dropdown.Toggle className="btn btn-dark dropdown-toggle" variant="secondary" id={`dropdown-${id}`} style={{ border: 'none', boxShadow: 'none' }}>
-                    <BsThreeDotsVertical />
-                </Dropdown.Toggle>
-
-                <style>
-                    {`
-                        .dropdown-toggle::after {
-                            display: none;
-                        }
-                    `}
-                </style>
-
-                <Dropdown.Menu className="dropdown-menu dropdown-menu-dark">
-                    <Dropdown.Item className="dropdown-item" onClick={handleEditPost}>Editar</Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item" onClick={handleDeletePost}>Excluir</Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
         </div>
     );
 };

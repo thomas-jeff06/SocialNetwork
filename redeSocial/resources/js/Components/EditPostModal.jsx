@@ -3,20 +3,14 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-
-const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
-    const initialPostState = {
-        author: '',
-        type: 'Post',
-        text: '',
-        image: null,
-    };
-
-    const [newPost, setNewPost] = useState(initialPostState);
+const EditPostModal = ({ show, handleClose, handleUpdatePost, post }) => {
+    // Adicione um estado local para rastrear as informações editadas
+    const [editedPost, setEditedPost] = useState({ ...post });
 
     const [errors, setErrors] = useState({});
     const [showImageError, setShowImageError] = useState(false);
 
+    //Bem parecido com CreatePostModal.
     const handleFieldChange = (e) => {
         const { name, type } = e.target;
 
@@ -24,37 +18,34 @@ const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
 
             const file = e.target.files[0];
 
-            // Verifica se o arquivo é uma imagem e tem extensão jpg ou png
             if (file && file.type.startsWith('image/') && (file.type === 'image/jpeg' || file.type === 'image/png')) {
-                setNewPost((prevPost) => ({
+                setEditedPost((prevPost) => ({
                     ...prevPost,
                     [name]: file,
                 }));
 
-                // Oculta a mensagem de erro se uma imagem válida for selecionada
                 setShowImageError(false);
             } else {
-                // Exibe a mensagem de erro se o arquivo não atender aos critérios
                 setShowImageError(true);
             }
         } else {
-            setNewPost((prevPost) => ({
+            setEditedPost((prevPost) => ({
                 ...prevPost,
                 [name]: e.target.value,
             }));
         }
     };
 
-    //Valida os forms e adiciona mensagens de error caso esteja com informação errada ou vazio.
+    //Mesmo valdiate de CreatePostModal.
     const validateForm = () => {
         const newErrors = {};
-        if (!newPost.author.trim()) {
+        if (!editedPost.author.trim()) {
             newErrors.author = 'O autor é obrigatório.';
         }
-        if (!newPost.type.trim()) {
+        if (!editedPost.type.trim()) {
             newErrors.type = 'O tipo é obrigatório.';
         }
-        if (!newPost.text.trim()) {
+        if (!editedPost.text.trim()) {
             newErrors.text = 'O texto é obrigatório.';
         }
         if (showImageError) {
@@ -65,39 +56,33 @@ const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    //Usado para formatar o Texto de reactQUILL
+
     const sanitizeHTML = (html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || '';
     };
 
-    const handlePostCreate = async () => {
+    const handleSaveChanges = async () => {
         if (validateForm()) {
-            // Remove as tags <p> do HTML gerado pelo React Quill
-            const sanitizedText = sanitizeHTML(newPost.text);
-
-            await handleCreatePost({ ...newPost, text: sanitizedText });
-
-            setNewPost(initialPostState); // Limpar os campos após o sucesso
-            handleClose();
+            editedPost.text = sanitizeHTML(editedPost.text);
+            console.log(editedPost);
+            await handleUpdatePost(editedPost);
         }
     };
 
     return (
-        <Modal className="modal" tabindex="-1" show={show} onHide={handleClose}>
-
-            <Modal.Header className="modal-header" closeButton>
-                <Modal.Title className="modal-title">Criar Nova Postagem</Modal.Title>
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Editar Post</Modal.Title>
             </Modal.Header>
-
-            <Modal.Body className="modal-body">
+            <Modal.Body>
                 <Form>
-                    <Form.Group controlId="author">
-                        <Form.Label>Nome do Usuário</Form.Label>
+                    <Form.Group controlId="Author">
+                        <Form.Label>Autor</Form.Label>
                         <Form.Control
                             type="text"
                             name="author"
-                            value={newPost.author}
+                            value={editedPost.author}
                             onChange={handleFieldChange}
                             isInvalid={!!errors.author}
                         />
@@ -108,7 +93,7 @@ const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
                         <Form.Control
                             as="select"
                             name="type"
-                            value={newPost.type}
+                            value={editedPost.type}
                             onChange={handleFieldChange}
                             isInvalid={!!errors.type}
                         >
@@ -121,25 +106,11 @@ const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
                     <Form.Group controlId="text">
                         <Form.Label>Conteúdo da Postagem</Form.Label>
                         <ReactQuill
-                            value={newPost.text}
+                            value={editedPost.text}
                             onChange={(value) => handleFieldChange({ target: { name: 'text', value } })}
                             className={errors.text ? 'is-invalid' : ''}
                         />
                         <Form.Control.Feedback type="invalid">{errors.text}</Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group controlId="image">
-                        <Form.Label>Upload de Imagem</Form.Label>
-                        <input
-                            type="file"
-                            name="image"
-                            accept="image/*"
-                            onChange={handleFieldChange}
-                        />
-                        {showImageError && (
-                            <Form.Text className="text-danger">
-                                Por favor, selecione uma imagem jpg ou png.
-                            </Form.Text>
-                        )}
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -147,12 +118,12 @@ const CreatePostModal = ({ show, handleClose, handleCreatePost }) => {
                 <Button variant="secondary" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="primary" onClick={handlePostCreate}>
-                    Publicar
+                <Button variant="primary" onClick={handleSaveChanges}>
+                    Salvar Alterações
                 </Button>
             </Modal.Footer>
         </Modal>
     );
 };
 
-export default CreatePostModal;
+export default EditPostModal;

@@ -8,20 +8,14 @@ use App\Http\Controllers\PostController;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 */
 
 Route::get('/posts', [PostController::class, 'index']);
 
-Route::post('/posts', [PostController::class, 'store']);
+Route::post('/post', [PostController::class, 'store']);
 
 Route::get('/post/{id}', [PostController::class, 'show']);
 
+Route::delete('/post/{id}', [PostController::class, 'destroy']);
+
+Route::put('/post/{id}', [PostController::class, 'update']);
