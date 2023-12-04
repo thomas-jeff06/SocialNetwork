@@ -49,7 +49,7 @@ Inicie o Servidor:
 php artisan serve
 
 6 - Inicie o servidor React:
-npm start run
+npm run dev
 
 7 - Acesse o Aplicativo:
 Abra o navegador e acesse http://localhost:8000 para ver o aplicativo em execução.
